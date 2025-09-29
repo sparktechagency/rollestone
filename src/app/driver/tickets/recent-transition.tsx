@@ -27,7 +27,8 @@ export default function RecentTransition() {
       </div>
     );
   }
-  return data.data.map(
+
+  return data?.data?.map(
     (x: {
       id: number;
       date_time: string;

@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ClockIcon, Loader2Icon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCookies } from "react-cookie";
 import { useUser } from "@/context/user-context";
@@ -65,7 +65,7 @@ export default function AvailableTrips({ fleet }: { fleet: string }) {
           <Loader2Icon className="animate-spin" />
         </div>
       ) : (
-        data.data.map(
+        data?.data?.map(
           (x: {
             id: number;
             name: string;

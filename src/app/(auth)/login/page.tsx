@@ -31,7 +31,7 @@ export default function Page() {
     }
   };
 
-  const { data, isPending }: idk = useQuery({
+  const { data, isPending, isError, error }: idk = useQuery({
     queryKey: ["companies"],
     queryFn: getCompaniesApi,
   });
@@ -83,6 +83,14 @@ export default function Page() {
     [".", "0", "*"],
   ];
 
+  if (isError) {
+    return (
+      <div className="h-dvh w-dvw bg-blue-50 flex justify-center items-center">
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
+    );
+  }
+
   return (
     <main className="h-dvh w-dvw bg-blue-50 flex justify-center items-center">
       <Card className="w-full max-w-md mx-4">
@@ -94,8 +102,8 @@ export default function Page() {
                   {!isPending && (
                     <>
                       {(() => {
-                        const company = data.data.find(
-                          (x: idk) => x.company_id === selectedCompany
+                        const company = data?.data?.find(
+                          (x: idk) => x?.company_id === selectedCompany
                         );
                         if (company) {
                           console.log(company);
@@ -110,11 +118,11 @@ export default function Page() {
                             />
                           );
                         } else {
-                          console.log(data.data);
-                          return data.data[0] ? (
+                          console.log(data?.data);
+                          return data?.data[0] ? (
                             <Image
                               alt="logo"
-                              src={data.data[0].company_logo}
+                              src={data?.data[0]?.company_logo}
                               height={300}
                               width={900}
                             />
@@ -126,7 +134,7 @@ export default function Page() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   {!isPending &&
-                    data.data.map((x: idk) => (
+                    data?.data?.map((x: idk) => (
                       <DropdownMenuItem
                         key={x.company_id}
                         className="w-[200px]!"
