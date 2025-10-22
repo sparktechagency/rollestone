@@ -7,20 +7,24 @@ import { idk } from "@/lib/utils";
 
 export default async function SecurityProvider({
   children,
-}: Readonly<{ children: ReactNode }>) {
-  const token = (await cookies()).get("token")?.value;
+}: {
+  children: ReactNode;
+}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
 
+  // 🧩 Important: early redirect, before any async calls
   if (!token) {
-    return redirect("/login");
+    redirect("/login");
   }
+
   const user: idk = await getProfileApi({ token });
-  if (!user.ok) {
-    try {
-      (await cookies()).delete("token");
-      return redirect("/login");
-    } catch (error) {
-      console.error(error);
-    }
+
+  // If invalid token or failed fetch
+  if (!user?.ok) {
+    // Delete cookie then redirect
+    cookieStore.delete("token");
+    redirect("/login");
   }
 
   return <UserProvider initialUser={user.data}>{children}</UserProvider>;
