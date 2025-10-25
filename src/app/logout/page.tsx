@@ -5,12 +5,21 @@ import { useCookies } from "react-cookie";
 
 export default function Page() {
   const router = useRouter();
-  const [{ token }, , removeCookie] = useCookies(["token"]);
+  const [cookies, , removeCookie] = useCookies(["token"]);
 
   useEffect(() => {
-    if (token) removeCookie("token");
-    router.replace("/login");
-  }, [token, removeCookie, router]);
+    if (cookies.token) {
+      // Remove cookie explicitly with matching options
+      removeCookie("token", { path: "/" });
+    }
 
-  return <>Logging out..</>;
+    // Small timeout ensures state updates before redirect
+    const timer = setTimeout(() => {
+      router.replace("/login");
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [cookies, removeCookie, router]);
+
+  return <>Logging out...</>;
 }

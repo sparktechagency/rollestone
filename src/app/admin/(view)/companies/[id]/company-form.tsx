@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -30,11 +29,15 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createCompanyApi } from "@/api/admin";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createCompanyApi,
+  getCompanyByIdApi,
+  updateCompanyApi,
+} from "@/api/admin";
 import { toast } from "sonner";
-import { idk } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { idk } from "@/lib/utils";
 
 const companySetupSchema = z
   .object({
@@ -62,23 +65,42 @@ const companySetupSchema = z
 
 type CompanySetupFormData = z.infer<typeof companySetupSchema>;
 
-export default function CompanySetupForm() {
+const ACCESS_OPTIONS = [
+  { id: "access admin dashboard", label: "Access Admin Dashboard" },
+  { id: "access driver console", label: "Access Driver Console" },
+  {
+    id: "access trip & route management",
+    label: "Access Trip & Route Management",
+  },
+  { id: "access passenger database", label: "Access Passenger Database" },
+  { id: "access fare control", label: "Access Fare Control" },
+  { id: "access notification system", label: "Access Notification System" },
+  { id: "access analytics", label: "Access Analytics" },
+];
+
+export default function CompanySetupForm({ id }: { id: string }) {
   const [{ token }] = useCookies(["token"]);
   const qcl = useQueryClient();
   const navig = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const [avatarPreview, setAvatarPreview] = useState<string | undefined>(
+    undefined
+  );
+
+  const { data, isPending } = useQuery({
+    queryKey: ["view_company", id],
+    queryFn: (): idk => getCompanyByIdApi({ id, companyID: "1", token }),
+  });
 
   const { mutate } = useMutation({
     mutationKey: ["company_create"],
-    mutationFn: (formData: FormData) => {
-      return createCompanyApi({ formData, companyID: "1", token });
-    },
-    onError: (err) => {
+    mutationFn: (formData: FormData): idk =>
+      updateCompanyApi({ id, formData, companyID: "1", token }),
+    onError: (err: any) => {
       toast.error(err.message ?? "Failed to complete this request");
       console.log(err);
     },
-    onSuccess: (res: idk) => {
+    onSuccess: (res: any) => {
       toast.success(res.message ?? "Success!");
       qcl.invalidateQueries({ queryKey: ["companies"] });
       navig.push("/admin/companies");
@@ -102,14 +124,34 @@ export default function CompanySetupForm() {
     },
   });
 
+  // Populate form with backend data
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        name: data.user?.name || "",
+        email: data.user?.email || "",
+        phone_number: data.user?.phone_number || "",
+        password: "",
+        password_confirmation: "",
+        company_name: data.data?.company_name || "",
+        contact_email: data.data?.contact_email || "",
+        address: data.user?.address || "",
+        subdomain: data.data?.subdomain || "",
+        status: data.data?.status || "active",
+        system_access: data.data?.system_access || [],
+        avatar: undefined,
+      });
+
+      setAvatarPreview(data.user?.avatar);
+    }
+  }, [data, form]);
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       form.setValue("avatar", file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
+      reader.onloadend = () => setAvatarPreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
@@ -119,7 +161,7 @@ export default function CompanySetupForm() {
     try {
       const formData = new FormData();
 
-      // Add all text fields
+      // Text fields
       formData.append("name", data.name);
       formData.append("email", data.email);
       formData.append("phone_number", data.phone_number);
@@ -131,25 +173,13 @@ export default function CompanySetupForm() {
       formData.append("subdomain", data.subdomain);
       formData.append("status", data.status);
 
-      // Add system_access array
-      data.system_access?.forEach((access) => {
-        formData.append("system_access[]", access);
-      });
-      // formData.append("system_access",data.system_access)
-      // Add avatar file if present
-      if (data.avatar) {
-        formData.append("avatar", data.avatar);
-      }
+      // System access
+      data.system_access?.forEach((access) =>
+        formData.append("system_access[]", access)
+      );
 
-      console.log("[v0] Form submitted with data:");
-      console.log("[v0] FormData entries:");
-      for (const [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`  ${key}: File(${value.name}, ${value.size} bytes)`);
-        } else {
-          console.log(`  ${key}: ${value}`);
-        }
-      }
+      // Avatar
+      if (data.avatar) formData.append("avatar", data.avatar);
 
       mutate(formData);
     } finally {
@@ -160,7 +190,6 @@ export default function CompanySetupForm() {
   return (
     <Card className="w-full mt-6 shadow-lg">
       <CardContent className="p-6 space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-3 pb-4 border-b">
           <Building className="w-6 h-6" />
           <h2 className="text-xl font-semibold">Company Setup</h2>
@@ -168,7 +197,7 @@ export default function CompanySetupForm() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Company Logo Upload */}
+            {/* Avatar Upload */}
             <div className="flex items-center gap-6">
               <div className="relative">
                 <Avatar className="size-24">
@@ -411,71 +440,36 @@ export default function CompanySetupForm() {
               <FormField
                 control={form.control}
                 name="system_access"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>System Access</FormLabel>
                     <div className="space-y-3 grid grid-cols-6">
-                      {[
-                        {
-                          id: "access admin dashboard",
-                          label: "Access Admin Dashboard",
-                        },
-                        {
-                          id: "access driver console",
-                          label: "Access Driver Console",
-                        },
-                        {
-                          id: "access trip & route management",
-                          label: "Access Trip & Route Management",
-                        },
-                        {
-                          id: "access passenger database",
-                          label: "Access Passenger Database",
-                        },
-                        {
-                          id: "access fare control",
-                          label: "Access Fare Control",
-                        },
-                        {
-                          id: "access notification system",
-                          label: "Access Notification System",
-                        },
-                        { id: "access analytics", label: "Access Analytics" },
-                      ].map((item) => (
-                        <FormField
+                      {ACCESS_OPTIONS.map((item) => (
+                        <FormItem
                           key={item.id}
-                          control={form.control}
-                          name="system_access"
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={item.id}
-                                className="flex flex-row items-center space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(item.id)}
-                                    onCheckedChange={(checked) => {
-                                      return checked
-                                        ? field.onChange([
-                                            ...(field.value as idk),
-                                            item.id,
-                                          ])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== item.id
-                                            )
-                                          );
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal cursor-pointer">
-                                  {item.label}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
+                          className="flex flex-row items-center space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value?.includes(item.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  field.onChange([
+                                    ...(field.value || []),
+                                    item.id,
+                                  ]);
+                                } else {
+                                  field.onChange(
+                                    field.value?.filter((v) => v !== item.id)
+                                  );
+                                }
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal cursor-pointer">
+                            {item.label}
+                          </FormLabel>
+                        </FormItem>
                       ))}
                     </div>
                     <FormMessage />
@@ -484,10 +478,10 @@ export default function CompanySetupForm() {
               />
             </div>
 
-            {/* Submit Button */}
+            {/* Submit Buttons */}
             <div className="flex justify-end gap-4">
-              <Button className="" variant={"outline"} asChild>
-                <Link href={"/admin/companies"}>Cancel</Link>
+              <Button variant="outline" asChild>
+                <Link href="/admin/companies">Cancel</Link>
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

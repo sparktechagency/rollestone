@@ -68,6 +68,7 @@ export default function CashCouncil() {
                 <TableHead>Date</TableHead>
                 <TableHead>Driver</TableHead>
                 <TableHead>Cash Processed</TableHead>
+                <TableHead>Cash Wallet</TableHead>
                 <TableHead>Recieved</TableHead>
                 <TableHead>Difference</TableHead>
                 <TableHead>Checked</TableHead>
@@ -94,6 +95,7 @@ export default function CashCouncil() {
                         ${x.wallet_collection}
                       </div>
                     </TableCell>
+                    <TableCell>${x.received_cash ?? 0}</TableCell>
                     <TableCell
                       className={`font-bold ${
                         x.difference === null || x.difference === undefined

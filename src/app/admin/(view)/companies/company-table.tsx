@@ -81,7 +81,7 @@ export default function CompanyTable() {
                 </TableCell>
                 <TableCell className="font-bold">
                   <Button variant={"ghost"} asChild>
-                    <Link href={"/admin/companies/edit"}>
+                    <Link href={`/admin/companies/${x.id}`}>
                       <EditIcon />
                     </Link>
                   </Button>

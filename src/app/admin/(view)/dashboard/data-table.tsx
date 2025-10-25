@@ -33,6 +33,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getLiveDashboardDataApi } from "@/api/admin";
 import { useCookies } from "react-cookie";
 import { idk } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 export default function DataTable() {
   const [cookies] = useCookies(["token"]);
   const [filter, setFilter] = useState<
@@ -42,7 +50,7 @@ export default function DataTable() {
     queryKey: ["route_list", filter],
     queryFn: (): idk => {
       return getLiveDashboardDataApi({
-        filter: "all",
+        filter: filter,
         companyID: "1",
         token: cookies.token,
       });
@@ -60,13 +68,13 @@ export default function DataTable() {
           <p className="text-sm">Real-time tracking of all active bus routes</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className=" border rounded-md flex items-center px-2">
+          {/* <div className=" border rounded-md flex items-center px-2">
             <SearchIcon className="text-muted-foreground size-5" />
             <Input
               className="bg-transparent border-0! outline-0! ring-0! shadow-none!"
               placeholder="Search  routes"
             />
-          </div>
+          </div> */}
           <Select
             onValueChange={(
               e: "all" | "ongoing" | "completed" | "blocked" | "cancelled"
@@ -136,11 +144,10 @@ export default function DataTable() {
                         <MapPinIcon className="size-5" />
                         {x.route_name}
                       </TableCell>
-                      <TableCell className="">
+                      <TableCell>
                         <span className="text-lg font-bold">
                           {x.passengers ?? "N/A"}
-                        </span>{" "}
-                        {/* <span>(62%)</span> */}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
@@ -154,23 +161,65 @@ export default function DataTable() {
                       <TableCell>
                         <Badge variant={"secondary"}>{x.status}</Badge>
                       </TableCell>
-                      <TableCell>
-                        <Button variant={"ghost"}>
-                          <EyeIcon />
-                        </Button>
-                        <Button variant={"ghost"}>
+                      <TableCell className="flex gap-1">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant={"ghost"}>
+                              <EyeIcon />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[450px]">
+                            <DialogHeader>
+                              <DialogTitle>Journey Details</DialogTitle>
+                              <DialogDescription>
+                                Detailed information about the selected trip.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-3 text-sm">
+                              <p>
+                                <strong>Route Name:</strong> {x?.route_name}
+                              </p>
+                              <p>
+                                <strong>Route Prefix:</strong> {x?.route_prefix}
+                              </p>
+                              <p>
+                                <strong>Trip Number:</strong> {x?.trip_number}
+                              </p>
+                              <p>
+                                <strong>Direction:</strong> {x?.direction}
+                              </p>
+                              <p>
+                                <strong>Departure Time:</strong>{" "}
+                                {x?.departure_time}
+                              </p>
+                              <p>
+                                <strong>Driver:</strong> {x?.driver_name}
+                              </p>
+                              <p>
+                                <strong>Passengers:</strong> {x?.passengers}
+                              </p>
+                              <p>
+                                <strong>Progress:</strong> {x?.progress}%
+                              </p>
+                              <p>
+                                <strong>Status:</strong>{" "}
+                                <Badge variant={"secondary"}>{x.status}</Badge>
+                              </p>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* <Button variant={"ghost"}>
                           <MessageSquareIcon />
-                        </Button>
+                        </Button> */}
                       </TableCell>
                     </TableRow>
                   )
                 )
               ) : (
-                <TableRow
-                  className={`flex justify-center items-center h-24 mx-auto`}
-                >
+                <TableRow className="flex justify-center items-center h-24 mx-auto">
                   <TableCell>
-                    <Loader2Icon className={`animate-spin`} />
+                    <Loader2Icon className="animate-spin" />
                   </TableCell>
                 </TableRow>
               )}

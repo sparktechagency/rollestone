@@ -14,6 +14,8 @@ export const getLiveDashboardDataApi = async ({
   companyID?: string;
   token: string;
 }) => {
+    console.log(`/v1/admin/dashboard/live-data?filter=${filter}`);
+    
   return howl(`/v1/admin/dashboard/live-data?filter=${filter}`, {
     method: "GET",
     headers: { "X-Company-ID": String(companyID) },

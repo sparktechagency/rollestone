@@ -17,37 +17,6 @@ export default function Page() {
         </p>
       </div>
       <CompanySetupForm />
-      <Card className="w-full mt-6">
-        <CardHeader>
-          <CardTitle>System Access</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-6 gap-12">
-          {access.map((x, i) => (
-            <div className="flex items-center gap-2" key={i}>
-              <Checkbox /> <Label>{x}</Label>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <div className="flex justify-end items-center mt-6 gap-2">
-        <Button className="" variant={"outline"} asChild>
-          <Link href={"/admin,companies"}>Cancel</Link>
-        </Button>
-        <Button className="bg-blue-600 hover:bg-blue-600/80">
-          Create Company
-        </Button>
-      </div>
     </main>
   );
 }
-
-const access = [
-  "Admin Dashboard",
-  "Driver Console (BDC)",
-  "Trip & Route Management",
-  "Trip & Route Management",
-  "Passenger Database",
-  "Fare Control",
-  "Notification System",
-  "Analytics Access",
-];
