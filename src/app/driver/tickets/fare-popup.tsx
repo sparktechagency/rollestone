@@ -29,6 +29,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 export default function FarePopup({
   selectedItem,
@@ -254,15 +259,17 @@ export default function FarePopup({
           </DialogContent>
         </Dialog>
 
-        <Input
-          placeholder="Top Up amount"
-          className="bg-background"
-          min={1}
-          value={amm ? String(amm) : ""}
-          onChange={(e) => {
-            setAmm(parseInt(e.target.value));
-          }}
-        />
+        <InputGroup className="bg-background">
+          <InputGroupInput
+            placeholder="Top Up amount"
+            min={1}
+            value={amm ? String(amm) : ""}
+            onChange={(e) => {
+              setAmm(parseInt(e.target.value));
+            }}
+          />
+          <InputGroupAddon>$</InputGroupAddon>
+        </InputGroup>
 
         <div className="text-center text-lg font-semibold">Payment Method</div>
         <div className="grid grid-cols-3 gap-2">

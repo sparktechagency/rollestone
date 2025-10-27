@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { IconCreditCardRefund, IconWheelchair } from "@tabler/icons-react";
@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -26,7 +27,13 @@ export default function TicketTopup() {
     <Card className="w-full h-auto flex flex-col justify-between">
       <CardContent className="h-auto w-full grid grid-cols-3 gap-6 p-6">
         {ticketTypes.map((x, i) => (
-          <Dialog key={i} open={dialogOpen}>
+          <Dialog
+            key={i}
+            open={dialogOpen}
+            onOpenChange={() => {
+              setDialogOpen(!dialogOpen);
+            }}
+          >
             <DialogTrigger asChild>
               <Button
                 variant={"outline"}
@@ -35,26 +42,26 @@ export default function TicketTopup() {
                   setDialogOpen(true);
                 }}
                 className={cn(
-                  "h-auto! flex flex-col justify-center gap-4 border",
+                  "h-auto! flex flex-col justify-center gap-4 border aspect-video",
                   "border-blue-300"
                 )}
               >
-                <Avatar className="size-16">
-                  <AvatarImage src={x.icon} />
-                  <AvatarFallback>UI</AvatarFallback>
-                </Avatar>
                 <p className="text-2xl">{x.title}</p>
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader className="border-b pb-2">
-                <DialogTitle>Select Fare Quantity & Payment Method</DialogTitle>
-              </DialogHeader>
-              <FarePopup
-                setDialogOpen={setDialogOpen}
-                selectedItem={selectedItem}
-              />
-            </DialogContent>
+            <DialogPortal>
+              <DialogContent>
+                <DialogHeader className="border-b pb-2">
+                  <DialogTitle>
+                    Select Fare Quantity & Payment Method
+                  </DialogTitle>
+                </DialogHeader>
+                <FarePopup
+                  setDialogOpen={setDialogOpen}
+                  selectedItem={selectedItem}
+                />
+              </DialogContent>
+            </DialogPortal>
           </Dialog>
         ))}
       </CardContent>
