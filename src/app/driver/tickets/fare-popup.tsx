@@ -1,9 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2Icon, MinusIcon, PlusIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  Loader2Icon,
+  MinusIcon,
+  PlusIcon,
+} from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -46,7 +51,11 @@ export default function FarePopup({
   const [passeng, setPasseng] = useState<string | undefined>();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const { user } = useUser();
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState("");
   const [{ token }] = useCookies(["token"]);
+  const containerRef = useRef<HTMLDivElement>(null);
   const ticketTypes = [
     { title: "Adult", price: 4.0, icon: "/avatar/adult.png" },
     { title: "Child", price: 3.5, icon: "/avatar/child.png" },
@@ -146,6 +155,31 @@ export default function FarePopup({
     setPaymentMethod((prev) => (prev === method ? null : method));
   };
 
+  const filtered =
+    !isPending && data?.data
+      ? data.data.filter((x: { name: string }) =>
+          x.name.toLowerCase().includes(search.toLowerCase())
+        )
+      : [];
+
+  const handleSelect = (item: { id: string; name: string }) => {
+    setSelected(item.name);
+    setPasseng(item.id);
+    setSearch(item.name);
+    setOpen(false);
+  };
+
+  // close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <>
       {/* {!isPending && (
@@ -162,23 +196,50 @@ export default function FarePopup({
             <AlertDescription>{error.message}</AlertDescription>
           </Alert>
         ) : (
-          <Select
-            onValueChange={(e) => {
-              setPasseng(e);
-            }}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Passengers" />
-            </SelectTrigger>
-            <SelectContent>
-              {!isPending &&
-                data.data.map((x: { name: string; id: string }) => (
-                  <SelectItem value={x.id} key={x.id}>
-                    {x.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
+          <div ref={containerRef} className="relative search-dropdown w-full">
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Search or select passenger..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onFocus={() => setOpen(true)}
+                className="w-full"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setOpen(!open)}
+              >
+                <ChevronDownIcon className="w-4 h-4 opacity-70" />
+              </Button>
+            </div>
+
+            {open && (
+              <Card className="absolute z-50 mt-2 w-full max-h-60 overflow-hidden border shadow-lg">
+                <CardContent className="p-2">
+                  <div className="max-h-52 overflow-y-auto space-y-1">
+                    {filtered.length > 0 ? (
+                      filtered.map((x: { id: string; name: string }) => (
+                        <Button
+                          key={x.id}
+                          variant="ghost"
+                          className="w-full justify-start"
+                          onClick={() => handleSelect(x)}
+                        >
+                          {x.name}
+                        </Button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground px-2 py-1">
+                        No results found
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
         {fareList.map((fare, index) => (
           <Card key={index} className="p-0!">
