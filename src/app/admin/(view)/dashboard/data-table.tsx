@@ -87,7 +87,7 @@ export default function DataTable() {
                 placeholder={
                   <p className="flex items-center gap-2">
                     <SlidersVerticalIcon />
-                    All stauses
+                    All statuses
                   </p>
                 }
               />

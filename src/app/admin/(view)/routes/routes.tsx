@@ -40,7 +40,7 @@ export default function Routes() {
         <CardHeader className="flex flex-row justify-between items-center">
           <div className="">
             <CardTitle className="flex items-center gap-2 text-xl mb-2">
-              <RouteIcon className="" /> All Drivers
+              <RouteIcon className="" /> All Routes
             </CardTitle>
             <p className="text-sm">
               Manage bus routes, schedules, and performance

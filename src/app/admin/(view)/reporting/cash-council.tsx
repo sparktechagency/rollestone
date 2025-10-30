@@ -20,7 +20,9 @@ import { idk } from "@/lib/utils";
 
 export default function CashCouncil() {
   const [{ token }] = useCookies(["token"]);
-  const [selectedDate, setSelectedDate] = useState("2025-08-20"); // default
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   const { data, isPending } = useQuery({
     queryKey: ["cash_reco", selectedDate], // refetch on date change

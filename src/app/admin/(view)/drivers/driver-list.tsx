@@ -74,7 +74,7 @@ export default function DriverList() {
               <SearchIcon className="text-muted-foreground size-5" />
               <Input
                 className="bg-transparent border-0! outline-0! ring-0! shadow-none!"
-                placeholder="Search routes"
+                placeholder="Search drivers"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
