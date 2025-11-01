@@ -10,7 +10,13 @@ import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
 
-export default function TopUp({ id }: { id: string }) {
+export default function TopUp({
+  id,
+  onClose,
+}: {
+  id: string;
+  onClose: () => void;
+}) {
   console.log(id);
 
   const [amm, setAmm] = useState<string>("0");
@@ -30,6 +36,7 @@ export default function TopUp({ id }: { id: string }) {
     },
     onSuccess: (res: idk) => {
       toast.success(res.message ?? "Top Up Successful");
+      onClose();
     },
   });
   return (

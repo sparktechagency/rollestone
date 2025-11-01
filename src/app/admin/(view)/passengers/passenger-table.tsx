@@ -42,6 +42,7 @@ import PassengerState from "./passenger-state";
 export default function PassengerTable() {
   const [search, setSearch] = useState<string>("");
   const [cookies] = useCookies(["token"]);
+  const [openTopUp, setOpenTopUp] = useState(false);
   const { data, isPending } = useQuery({
     queryKey: ["passengers"],
     queryFn: (): idk => {
@@ -136,9 +137,9 @@ export default function PassengerTable() {
                           <PassengerDetails data={x} />
                         </DialogContent>
                       </Dialog>
-                      <Dialog>
+                      <Dialog open={openTopUp} onOpenChange={setOpenTopUp}>
                         <DialogTrigger asChild>
-                          <Button variant={"ghost"}>
+                          <Button variant="ghost">
                             <CoinsIcon />
                           </Button>
                         </DialogTrigger>
@@ -146,22 +147,12 @@ export default function PassengerTable() {
                           <DialogHeader>
                             <DialogTitle>Top Up Balance</DialogTitle>
                           </DialogHeader>
-                          <TopUp id={x.id} />
+                          <TopUp
+                            id={x.id}
+                            onClose={() => setOpenTopUp(false)}
+                          />
                         </DialogContent>
                       </Dialog>
-                      {/* <Dialog>
-                        <DialogTrigger asChild>
-                          <Button variant={"ghost"}>
-                            <MonitorCogIcon />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Statement for {x.name}</DialogTitle>
-                          </DialogHeader>
-                          <PassengerState data={x} />
-                        </DialogContent>
-                      </Dialog> */}
                     </TableCell>
                   </TableRow>
                 ))
