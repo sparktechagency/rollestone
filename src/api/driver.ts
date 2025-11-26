@@ -173,3 +173,16 @@ export const checkJourneyApi = async ({
     ...(token && { token }),
   });
 };
+
+export const scanQRApi = async ({
+  companyID,
+  token,
+  pay_code
+}: { companyID: string; token?: string,pay_code:string }) => {
+  return howl(`/v1/driver/journeys/process-single-payment`, {
+    method: "POST",
+    headers: { "X-Company-ID": String(companyID) },
+    body:{qr_number:pay_code},
+    token
+  });
+};
