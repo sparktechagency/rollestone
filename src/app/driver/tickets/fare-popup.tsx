@@ -1,14 +1,8 @@
 "use client";
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  ChevronDownIcon,
-  Loader2Icon,
-  MinusIcon,
-  PlusIcon,
-} from "lucide-react";
+import { Loader2Icon, MinusIcon, PlusIcon } from "lucide-react";
 import {
   Dialog,
   DialogClose,
@@ -34,11 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { useRouter } from "next/navigation";
 
 export default function FarePopup({
   selectedItem,
@@ -51,11 +41,8 @@ export default function FarePopup({
   const [passeng, setPasseng] = useState<string | undefined>();
   const [submitting, setSubmitting] = useState<boolean>(false);
   const { user } = useUser();
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState("");
+  const navig = useRouter();
   const [{ token }] = useCookies(["token"]);
-  const containerRef = useRef<HTMLDivElement>(null);
   const ticketTypes = [
     { title: "Adult", price: 4.0, icon: "/avatar/adult.png" },
     { title: "Child", price: 3.5, icon: "/avatar/child.png" },
@@ -155,31 +142,6 @@ export default function FarePopup({
     setPaymentMethod((prev) => (prev === method ? null : method));
   };
 
-  const filtered =
-    !isPending && data?.data
-      ? data.data.filter((x: { name: string }) =>
-          x.name.toLowerCase().includes(search.toLowerCase())
-        )
-      : [];
-
-  const handleSelect = (item: { id: string; name: string }) => {
-    setSelected(item.name);
-    setPasseng(item.id);
-    setSearch(item.name);
-    setOpen(false);
-  };
-
-  // close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <>
       {/* {!isPending && (
@@ -196,50 +158,23 @@ export default function FarePopup({
             <AlertDescription>{error.message}</AlertDescription>
           </Alert>
         ) : (
-          <div ref={containerRef} className="relative search-dropdown w-full">
-            <div className="flex items-center gap-2">
-              <Input
-                placeholder="Search or select passenger..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onFocus={() => setOpen(true)}
-                className="w-full"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => setOpen(!open)}
-              >
-                <ChevronDownIcon className="w-4 h-4 opacity-70" />
-              </Button>
-            </div>
-
-            {open && (
-              <Card className="absolute z-50 mt-2 w-full max-h-60 overflow-hidden border shadow-lg">
-                <CardContent className="p-2">
-                  <div className="max-h-52 overflow-y-auto space-y-1">
-                    {filtered.length > 0 ? (
-                      filtered.map((x: { id: string; name: string }) => (
-                        <Button
-                          key={x.id}
-                          variant="ghost"
-                          className="w-full justify-start"
-                          onClick={() => handleSelect(x)}
-                        >
-                          {x.name}
-                        </Button>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground px-2 py-1">
-                        No results found
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          <Select
+            onValueChange={(e) => {
+              setPasseng(e);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select Passengers" />
+            </SelectTrigger>
+            <SelectContent>
+              {!isPending &&
+                data.data.map((x: { name: string; id: string }) => (
+                  <SelectItem value={x.id} key={x.id}>
+                    {x.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         )}
         {fareList.map((fare, index) => (
           <Card key={index} className="p-0!">
@@ -320,17 +255,15 @@ export default function FarePopup({
           </DialogContent>
         </Dialog>
 
-        <InputGroup className="bg-background">
-          <InputGroupInput
-            placeholder="Top Up amount"
-            min={1}
-            value={amm ? String(amm) : ""}
-            onChange={(e) => {
-              setAmm(parseInt(e.target.value));
-            }}
-          />
-          <InputGroupAddon>$</InputGroupAddon>
-        </InputGroup>
+        <Input
+          placeholder="Top Up amount"
+          className="bg-background"
+          min={1}
+          value={amm ? String(amm) : ""}
+          onChange={(e) => {
+            setAmm(parseInt(e.target.value));
+          }}
+        />
 
         <div className="text-center text-lg font-semibold">Payment Method</div>
         <div className="grid grid-cols-3 gap-2">
@@ -339,7 +272,13 @@ export default function FarePopup({
               key={i}
               variant={paymentMethod === method ? "success" : "outline"}
               className="flex flex-col items-center h-auto py-6"
-              onClick={() => handlePaymentSelect(method)}
+              onClick={() => {
+                if (method === "RX Card") {
+                  navig.push(`/driver/tickets/qr`);
+                } else {
+                  handlePaymentSelect(method);
+                }
+              }}
             >
               <span className="text-2xl">
                 {method === "Cash" ? "$" : method === "RX Card" ? "📇" : "🎁"}
@@ -349,6 +288,7 @@ export default function FarePopup({
           ))}
         </div>
       </div>
+
       <DialogFooter className="grid grid-cols-2 gap-6">
         <DialogClose
           asChild

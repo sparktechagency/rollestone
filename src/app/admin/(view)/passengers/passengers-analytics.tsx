@@ -13,11 +13,11 @@ import { useCookies } from "react-cookie";
 import { Loader2Icon } from "lucide-react";
 import { idk } from "@/lib/utils";
 export default function PassengersAnalytics() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const { data, isPending } = useQuery({
     queryKey: ["passengers_analytics"],
     queryFn: (): idk => {
-      return getPassengerAnalyticsApi({ companyID: "1", token });
+      return getPassengerAnalyticsApi({ companyID: "1", token: AdminToken });
     },
   });
 

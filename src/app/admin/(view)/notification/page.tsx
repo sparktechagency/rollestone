@@ -8,11 +8,11 @@ import { Loader2Icon } from "lucide-react";
 import { idk } from "@/lib/utils";
 
 export default function Page() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const { data, isPending } = useQuery({
     queryKey: ["notif"],
     queryFn: (): idk => {
-      return getNotifications({ companyID: "1", token });
+      return getNotifications({ companyID: "1", token: AdminToken });
     },
   });
   return (

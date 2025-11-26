@@ -37,12 +37,16 @@ const formSchema = z.object({
 });
 
 export default function MessageForm() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const qCl = useQueryClient();
   const { mutate } = useMutation({
     mutationKey: ["create_message"],
     mutationFn: (data: idk) => {
-      return createMessageApi({ body: data, companyID: "1", token });
+      return createMessageApi({
+        body: data,
+        companyID: "1",
+        token: AdminToken,
+      });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");

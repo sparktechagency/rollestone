@@ -36,7 +36,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [, setCookie] = useCookies(["token"]);
+  const [, setCookie] = useCookies(["AdminToken"]);
   const navig = useRouter();
   const { mutate, isPending } = useMutation({
     mutationKey: ["login"],
@@ -53,7 +53,7 @@ export default function LoginPage() {
         return;
       }
       try {
-        setCookie("token", data.data.access_token);
+        setCookie("AdminToken", data.data.access_token);
         navig.push("/admin/dashboard");
       } catch (error) {
         console.error(error);

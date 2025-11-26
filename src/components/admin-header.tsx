@@ -5,6 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { useCurrentTime } from "./sub-ui/get-time";
 import Link from "next/link";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
 function getCurrentFormattedDate(): string {
   const now = new Date();
@@ -23,6 +26,8 @@ function getCurrentFormattedDate(): string {
 }
 
 export default function AdminHeader() {
+  const [, , removeToken] = useCookies(["AdminToken"]);
+  const navig = useRouter();
   const time = useCurrentTime();
   return (
     <header className=" bg-background flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -44,17 +49,35 @@ export default function AdminHeader() {
               <BellIcon /> Notification
             </Link>
           </Button>
-          <div className="p-2 rounded-md border flex flex-row text-sm! gap-4 items-center">
-            <Avatar className="size-10">
-              <AvatarImage src={"https://avatar.iran.liara.run/public"} />
-              <AvatarFallback>UI</AvatarFallback>
-            </Avatar>
-            <div className="">
-              <h4 className="font-bold">RX Rolleston</h4>
-              <span>Administrator</span>
-            </div>
-            <ChevronDown className="size-5" />
-          </div>
+          <Popover>
+            <PopoverTrigger>
+              <div className="p-2 rounded-md border flex flex-row text-sm! gap-4 items-center">
+                <Avatar className="size-10">
+                  <AvatarImage src={"https://avatar.iran.liara.run/public"} />
+                  <AvatarFallback>UI</AvatarFallback>
+                </Avatar>
+                <div className="">
+                  <h4 className="font-bold">RX Rolleston</h4>
+                  <span>Administrator</span>
+                </div>
+                <ChevronDown className="size-5" />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <h4 className="text-sm font-semibold">Are you sure?</h4>
+              <div className="flex justify-end items-center">
+                <Button
+                  variant={"destructive"}
+                  onClick={() => {
+                    removeToken("AdminToken");
+                    navig.push("/admin/login");
+                  }}
+                >
+                  Log out
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </header>

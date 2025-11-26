@@ -11,7 +11,7 @@ import { cookies } from "next/headers";
 import { idk } from "@/lib/utils";
 
 export default async function MessageStats() {
-  const token = (await cookies()).get("token")?.value;
+  const token = (await cookies()).get("AdminToken")?.value;
   const call: idk = await getMessagesDashboardStatsApi({
     companyID: "1",
     token,

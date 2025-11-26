@@ -7,7 +7,7 @@ import { idk } from "@/lib/utils";
 import CashCouncil from "./cash-council";
 
 export default async function Revenue() {
-  const token = (await cookies()).get("token")?.value;
+  const token = (await cookies()).get("AdminToken")?.value;
   const call: idk = await getRevenueByRouteApi({
     filter: "weekly",
     companyID: "1",

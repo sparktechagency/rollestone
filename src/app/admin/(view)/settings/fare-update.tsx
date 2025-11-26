@@ -11,12 +11,16 @@ import { toast } from "sonner";
 
 export default function FareUpdate({ current }: { current: number }) {
   const [currentVal, setCurrentVal] = useState<number>(0);
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const qCl = useQueryClient();
   const { mutate } = useMutation({
     mutationKey: ["updateSettings"],
     mutationFn: (data: idk) => {
-      return updateSettingsApi({ body: data, companyID: "1", token });
+      return updateSettingsApi({
+        body: data,
+        companyID: "1",
+        token: AdminToken,
+      });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");

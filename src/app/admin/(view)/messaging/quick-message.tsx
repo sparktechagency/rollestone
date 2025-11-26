@@ -34,7 +34,7 @@ type FormValues = {
 };
 
 export default function QuickMessage() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const queryClient = useQueryClient();
 
   const { control, handleSubmit, reset } = useForm<FormValues>({
@@ -46,7 +46,7 @@ export default function QuickMessage() {
 
   const mutation = useMutation({
     mutationFn: (data: idk) =>
-      createMessageApi({ body: data, companyID: "1", token }),
+      createMessageApi({ body: data, companyID: "1", token: AdminToken }),
     onSuccess: () => {
       toast.success("Message sent successfully!");
       queryClient.invalidateQueries({ queryKey: ["recent_messages"] });

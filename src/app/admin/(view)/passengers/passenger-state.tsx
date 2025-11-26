@@ -14,8 +14,6 @@ import { PrinterIcon } from "lucide-react";
 import React from "react";
 
 export default function PassengerState({ data }: { data: idk }) {
-  console.log(data);
-
   return (
     <>
       <div className="w-full">

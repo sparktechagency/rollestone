@@ -10,7 +10,7 @@ import { getRouteAnalytics } from "@/api/admin";
 import { cookies } from "next/headers";
 import { idk } from "@/lib/utils";
 export default async function Statistics() {
-  const token = (await cookies()).get("token")?.value;
+  const token = (await cookies()).get("AdminToken")?.value;
   const call: idk = await getRouteAnalytics({ companyID: "1", token });
   const data = call.data;
   const cardData = [

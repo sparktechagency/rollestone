@@ -17,14 +17,18 @@ import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 
 export default function Recents() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const [filterer, setFilterer] = useState<"sent" | "draft" | "schedule">(
     "sent"
   );
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["recent_messages", filterer],
     queryFn: (): idk => {
-      return getMessagesApi({ status: filterer, companyID: "1", token });
+      return getMessagesApi({
+        status: filterer,
+        companyID: "1",
+        token: AdminToken,
+      });
     },
   });
   return (

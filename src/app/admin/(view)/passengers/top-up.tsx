@@ -10,17 +10,11 @@ import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import { toast } from "sonner";
 
-export default function TopUp({
-  id,
-  onClose,
-}: {
-  id: string;
-  onClose: () => void;
-}) {
+export default function TopUp({ id }: { id: string }) {
   console.log(id);
 
   const [amm, setAmm] = useState<string>("0");
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const { mutate } = useMutation({
     mutationKey: ["top_up"],
     mutationFn: () => {
@@ -28,7 +22,7 @@ export default function TopUp({
         passengerId: id,
         companyID: "1",
         body: { amount: parseFloat(amm) },
-        token,
+        token: AdminToken,
       });
     },
     onError: (err) => {
@@ -36,7 +30,6 @@ export default function TopUp({
     },
     onSuccess: (res: idk) => {
       toast.success(res.message ?? "Top Up Successful");
-      onClose();
     },
   });
   return (

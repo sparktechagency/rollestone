@@ -19,10 +19,8 @@ import { useCookies } from "react-cookie";
 import { idk } from "@/lib/utils";
 
 export default function CashCouncil() {
-  const [{ token }] = useCookies(["token"]);
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
+  const [selectedDate, setSelectedDate] = useState("2025-08-20"); // default
 
   const { data, isPending } = useQuery({
     queryKey: ["cash_reco", selectedDate], // refetch on date change
@@ -30,7 +28,7 @@ export default function CashCouncil() {
       return getCashReconciliationApi({
         date: selectedDate,
         companyID: "1",
-        token,
+        token: AdminToken,
       });
     },
   });
@@ -70,7 +68,6 @@ export default function CashCouncil() {
                 <TableHead>Date</TableHead>
                 <TableHead>Driver</TableHead>
                 <TableHead>Cash Processed</TableHead>
-                <TableHead>Cash Wallet</TableHead>
                 <TableHead>Recieved</TableHead>
                 <TableHead>Difference</TableHead>
                 <TableHead>Checked</TableHead>
@@ -97,7 +94,6 @@ export default function CashCouncil() {
                         ${x.wallet_collection}
                       </div>
                     </TableCell>
-                    <TableCell>${x.received_cash ?? 0}</TableCell>
                     <TableCell
                       className={`font-bold ${
                         x.difference === null || x.difference === undefined

@@ -65,14 +65,14 @@ type FormValues = z.infer<typeof FormSchema>;
    ------------------------- */
 export default function AddRouteForm() {
   const navig = useRouter();
-  const [cookies] = useCookies(["token"]);
+  const [cookies] = useCookies(["AdminToken"]);
   const { mutate } = useMutation({
     mutationKey: ["route-create"],
     mutationFn: (data: idk) => {
       return createRouteApi({
         body: data,
         companyID: "1",
-        token: cookies.token,
+        token: cookies.AdminToken,
       });
     },
     onError: (err) => {

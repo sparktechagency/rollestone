@@ -20,11 +20,11 @@ import {
 import FareUpdate from "./fare-update";
 
 export default function SystemSettingsPage() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const { data, isPending } = useQuery({
     queryKey: ["settings"],
     queryFn: (): idk => {
-      return getSettingsApi({ companyID: "1", token });
+      return getSettingsApi({ companyID: "1", token: AdminToken });
     },
   });
 

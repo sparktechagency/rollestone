@@ -39,7 +39,7 @@ const formSchema = z
   });
 
 export default function CreateUser() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
 
   const { mutate, isPending } = useMutation({
     mutationKey: ["create_user"],
@@ -47,7 +47,7 @@ export default function CreateUser() {
       createPassengerApi({
         body: data,
         companyID: "1",
-        token,
+        token: AdminToken,
       }),
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");

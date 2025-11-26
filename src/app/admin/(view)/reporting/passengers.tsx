@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import React from "react";
 
 export default async function Passengers() {
-  const token = (await cookies()).get("token")?.value;
+  const token = (await cookies()).get("AdminToken")?.value;
   const data: idk = await getPassengerAnalyticsApi({ companyID: "1", token });
 
   return (

@@ -45,7 +45,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getDriversApi } from "@/api/admin";
 import { idk } from "@/lib/utils";
 export default function DriverList() {
-  const [cookies] = useCookies(["token"]);
+  const [cookies] = useCookies(["AdminToken"]);
   const [search, setSearch] = useState<string>("");
   const { data, isPending } = useQuery({
     queryKey: ["driver_list", search],
@@ -53,7 +53,7 @@ export default function DriverList() {
       return getDriversApi({
         search,
         companyID: "1",
-        token: cookies.token,
+        token: cookies.AdminToken,
       });
     },
   });
@@ -74,7 +74,7 @@ export default function DriverList() {
               <SearchIcon className="text-muted-foreground size-5" />
               <Input
                 className="bg-transparent border-0! outline-0! ring-0! shadow-none!"
-                placeholder="Search drivers"
+                placeholder="Search routes"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);

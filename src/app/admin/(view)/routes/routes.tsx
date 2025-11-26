@@ -20,11 +20,11 @@ import { getRoutesApi } from "@/api/admin";
 import { cn, idk } from "@/lib/utils";
 
 export default function Routes() {
-  const [cookies] = useCookies(["token"]);
+  const [cookies] = useCookies(["AdminToken"]);
   const { data, isPending } = useQuery({
     queryKey: ["routes"],
     queryFn: (): idk => {
-      return getRoutesApi({ companyID: "1", token: cookies.token });
+      return getRoutesApi({ companyID: "1", token: cookies.AdminToken });
     },
   });
   if (isPending) {
@@ -40,7 +40,7 @@ export default function Routes() {
         <CardHeader className="flex flex-row justify-between items-center">
           <div className="">
             <CardTitle className="flex items-center gap-2 text-xl mb-2">
-              <RouteIcon className="" /> All Routes
+              <RouteIcon className="" /> All Drivers
             </CardTitle>
             <p className="text-sm">
               Manage bus routes, schedules, and performance

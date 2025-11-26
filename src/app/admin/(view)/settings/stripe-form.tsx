@@ -37,19 +37,23 @@ const stripeSchema = z.object({
 type StripeFormValues = z.infer<typeof stripeSchema>;
 
 export default function StripeForm() {
-  const [{ token }] = useCookies(["token"]);
+  const [{ AdminToken }] = useCookies(["AdminToken"]);
   const qCl = useQueryClient();
   const [whd, setWhd] = useState("");
   const { data, isPending } = useQuery({
     queryKey: ["settings"],
     queryFn: (): idk => {
-      return getSettingsApi({ companyID: "1", token });
+      return getSettingsApi({ companyID: "1", token: AdminToken });
     },
   });
   const { mutate } = useMutation({
     mutationKey: ["updateSettings"],
     mutationFn: (data: idk) => {
-      return updateSettingsApi({ body: data, companyID: "1", token });
+      return updateSettingsApi({
+        body: data,
+        companyID: "1",
+        token: AdminToken,
+      });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");
@@ -64,7 +68,7 @@ export default function StripeForm() {
   const { mutate: tester, isPending: testPending } = useMutation({
     mutationKey: ["test_stripe"],
     mutationFn: () => {
-      return testStripeSettingsApi({ companyID: "1", token });
+      return testStripeSettingsApi({ companyID: "1", token: AdminToken });
     },
     onError: (err) => {
       toast.error(err.message ?? "Failed to complete this request");

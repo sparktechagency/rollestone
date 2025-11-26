@@ -10,7 +10,7 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const token = (await cookies()).get("token")?.value;
+  const token = (await cookies()).get("AdminToken")?.value;
   if (!token) {
     return notFound();
   }

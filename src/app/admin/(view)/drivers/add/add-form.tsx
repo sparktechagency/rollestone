@@ -54,7 +54,7 @@ const driverSchema = z
 
 export default function DriverForm() {
   const [img, setImg] = useState<File | undefined>();
-  const [cookies] = useCookies(["token"]);
+  const [cookies] = useCookies(["AdminToken"]);
   const navig = useRouter();
   const { mutate } = useMutation({
     mutationKey: ["create_driver"],
@@ -62,7 +62,7 @@ export default function DriverForm() {
       return createDriverApi({
         formData: data,
         companyID: "1",
-        token: cookies.token,
+        token: cookies.AdminToken,
       });
     },
     onError: (err) => {

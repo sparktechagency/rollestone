@@ -64,11 +64,11 @@ type FormValues = z.infer<typeof FormSchema>;
 export default function EditRouteForm({ id }: { id: string }) {
   const navig = useRouter();
 
-  const [cookies] = useCookies(["token"]);
+  const [cookies] = useCookies(["AdminToken"]);
   const { data, isPending } = useQuery({
     queryKey: ["route", id],
     queryFn: (): idk => {
-      return getRouteByIdApi({ id, companyID: "1", token: cookies.token });
+      return getRouteByIdApi({ id, companyID: "1", token: cookies.AdminToken });
     },
   });
   /* 👇 hydrate form when query data arrives */
@@ -116,7 +116,7 @@ export default function EditRouteForm({ id }: { id: string }) {
         body: payload,
         id,
         companyID: "1",
-        token: cookies.token,
+        token: cookies.AdminToken,
       });
     },
     onError: (err) => {
