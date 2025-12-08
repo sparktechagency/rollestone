@@ -27,6 +27,7 @@ export async function howl<T>(
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "69420",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },

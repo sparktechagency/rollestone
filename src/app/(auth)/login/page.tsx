@@ -83,17 +83,9 @@ export default function Page() {
     [".", "0", "*"],
   ];
 
-  if (isError) {
-    return (
-      <div className="h-dvh w-dvw bg-blue-50 flex justify-center items-center">
-        <pre>{JSON.stringify(error, null, 2)}</pre>
-      </div>
-    );
-  }
-
   return (
     <main className="h-dvh w-dvw bg-blue-50 flex justify-center items-center">
-      <Card className="w-full max-w-md mx-4">
+      <Card className="lg:w-full max-w-md mx-4">
         <CardContent className="p-8">
           <div className="w-full text-center space-y-6 flex flex-col item-center justify-center">
             <div className="w-[200px] mx-auto">
@@ -173,7 +165,7 @@ export default function Page() {
                   <button
                     key={index}
                     onClick={() => handleInputClick(index)}
-                    className={`w-12 h-12 border-2 rounded-lg text-xl font-semibold bg-white
+                    className={`size-10 lg:size-12 border-2 rounded-lg text-xl font-semibold bg-white
                       ${
                         currentIndex === index
                           ? "border-purple-500"
@@ -195,7 +187,7 @@ export default function Page() {
                     <Button
                       key={button}
                       variant="secondary"
-                      className="w-16 h-12 text-lg font-semibold bg-white hover:bg-gray-50 border border-gray-300"
+                      className="w-12 lg:w-16 lg:h-12 text-lg font-semibold bg-white hover:bg-gray-50 border border-gray-300"
                       onClick={() => handleKeypadClick(button)}
                       disabled={currentIndex >= 4}
                     >
